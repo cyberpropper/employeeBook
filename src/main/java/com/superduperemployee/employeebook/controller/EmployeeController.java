@@ -30,64 +30,32 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/del")
-    public Object employeeDelete(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.deleteEmployee(firstName, lastName);
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
-    }
+    public void employeeDelete(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {}
 
     @GetMapping(path = "/add")
-    public Object employeeAdd(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.addEmployee(firstName, lastName);
-        } catch (EmployeeAlreadyAddedExeption | EmployeeStorageIsFullException e) {
-            return e.getMessage();
-        }
+    public void employeeAdd(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
     }
+
+
 
     @GetMapping(path = "/find")
-    public Object employeeFind(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.findEmployee(firstName, lastName);
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
+    public void employeeFind(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
     }
 
+
     @GetMapping(path = "/departments/all", params = "departmentId")
-    public Object employeeInDepartment(@RequestParam("departmentId") int department) {
-        try {
-            return departmentService.getEmployeesInDepartment(department);
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
+    public void employeeInDepartment(@RequestParam("departmentId") int department) {
     }
     @GetMapping(path = "/departments/all")
-    public Object employeeGroupByDepartment() {
-        try {
-            return departmentService.getEmployeesGroupByDepartment();
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
+    public void employeeGroupByDepartment() {
+
     }
 
     @GetMapping(path = "/departments/min-salary")
-    public Object employeeMinSalary(@RequestParam("departmentId") int department) {
-        try {
-            return departmentService.getSalaryMin(department);
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
+    public void employeeMinSalary(@RequestParam("departmentId") int department) {
     }
 
     @GetMapping(path = "/departments/max-salary")
-    public Object employeeMaxSalary(@RequestParam("departmentId") int department) {
-        try {
-            return departmentService.getSalaryMax(department);
-        } catch (EmployeeNotFoundExeption e) {
-            return e.getMessage();
-        }
+    public void employeeMaxSalary(@RequestParam("departmentId") int department) {
     }
 }

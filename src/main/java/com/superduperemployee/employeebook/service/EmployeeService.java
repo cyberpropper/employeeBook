@@ -4,21 +4,22 @@ import com.superduperemployee.employeebook.exeption.EmployeeAlreadyAddedExeption
 import com.superduperemployee.employeebook.exeption.EmployeeNotFoundExeption;
 import com.superduperemployee.employeebook.exeption.EmployeeStorageIsFullException;
 import com.superduperemployee.employeebook.model.Employee;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class EmployeeService implements EmployeeServiceInterface {
-    private final Map<String, Employee> employeesBook = new HashMap<>(Map.of());
+    private final Map<String, Employee> employeesBook = new HashMap<>();
     private int maxEmployees = Integer.MAX_VALUE;
 
     public EmployeeService() {
         demoFill();
     }
 
+    @PostConstruct
     public void demoFill() {
-        employeesBook.clear();
         addEmployee("Виктор", "Кормушкин", 1, 12_000);
         addEmployee("Иван", "Печкин", 1, 21_000);
         addEmployee("Виталий", "Скидан", 1, 44000);

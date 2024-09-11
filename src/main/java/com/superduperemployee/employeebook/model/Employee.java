@@ -49,7 +49,10 @@ public class Employee {
     }
 
     public double getSalary() {
-        return salary > 0 ? salary : 0;
+        if (salary <= 0) {
+            throw new IllegalArgumentException("Зарплата должна быть положительным числом");
+        }
+        return salary;
     }
 
 
@@ -63,11 +66,14 @@ public class Employee {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Objects.equals(firstName, employee.firstName) && Objects.equals(lastName, employee.lastName);
+        return Objects.equals(firstName, employee.firstName) &&
+                Objects.equals(lastName, employee.lastName) &&
+                Objects.equals(salary, employee.salary) &&
+                Objects.equals(department, employee.department);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName);
+        return Objects.hash(firstName, lastName, salary, department);
     }
 }

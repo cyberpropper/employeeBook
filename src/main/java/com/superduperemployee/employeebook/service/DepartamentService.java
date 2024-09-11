@@ -21,7 +21,7 @@ public class DepartamentService implements DepartamentServiceInterface {
 
     private List<Employee> getEmployeesDepartment(int department) {
         return employeeService.getEmployees().values().stream()
-                .filter(e -> e.getDepartment() == department || department == ALL_DEPARTMENTS)
+                .filter(e -> e.getDepartment() == department)
                 .toList();
     }
 
@@ -39,20 +39,17 @@ public class DepartamentService implements DepartamentServiceInterface {
 
     @Override
     public Employee getSalaryMin(int department) {
-        Optional<Employee> employeeMin = getEmployeesDepartment(department).stream()
-                .min(Comparator.comparingDouble(Employee::getSalary));
-        if (employeeMin.isPresent()) return employeeMin.get();
-        throw new EmployeeNotFoundExeption();
+        return getEmployeesDepartment(department).stream()
+                .min(Comparator.comparingDouble(Employee::getSalary))
+                .orElseThrow(EmployeeNotFoundExeption::new);
     }
 
     @Override
     public Employee getSalaryMax(int department) {
-        Optional<Employee> employeeMax = getEmployeesDepartment(department).stream()
-                .max(Comparator.comparingDouble(Employee::getSalary));
-        if (employeeMax.isPresent()) return employeeMax.get();
-        throw new EmployeeNotFoundExeption();
+        return getEmployeesDepartment(department).stream()
+                .max(Comparator.comparingDouble(Employee::getSalary))
+                .orElseThrow(EmployeeNotFoundExeption::new);
     }
-
     @Override
     public Map<Integer, List<Employee>> getEmployeesGroupByDepartment() {
         return employeeService.getEmployees().values().stream()
