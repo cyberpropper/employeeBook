@@ -25,14 +25,10 @@ public class DepartamentService implements DepartamentServiceInterface {
                 .toList();
     }
 
-    @Override
-    public void Init() {
-
-    }
 
     @Override
     public Map<String, Employee> getEmployeesInDepartment(int department) {
-        return employeeService.getEmployees().entrySet().stream() // раскопал про entrySet - попробовал
+        return employeeService.getEmployees().entrySet().stream()
                 .filter(e -> e.getValue().getDepartment() == department || department == ALL_DEPARTMENTS)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
