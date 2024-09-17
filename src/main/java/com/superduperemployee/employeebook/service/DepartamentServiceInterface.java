@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface DepartamentServiceInterface {
-    int ALL_DEPARTMENTS = -1;
-
 
     Map<String, Employee> getEmployeesInDepartment(int department) throws IllegalArgumentException;
     Employee getSalaryMin(int department) throws IllegalArgumentException;
