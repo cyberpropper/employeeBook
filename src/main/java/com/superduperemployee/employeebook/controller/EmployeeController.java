@@ -1,104 +1,45 @@
 package com.superduperemployee.employeebook.controller;
 
-
 import com.superduperemployee.employeebook.model.Employee;
-import com.superduperemployee.employeebook.service.DepartamentServiceInterface;
 import com.superduperemployee.employeebook.service.EmployeeServiceInterface;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import com.superduperemployee.employeebook.exeption.EmployeeNotFoundExeption;
-import com.superduperemployee.employeebook.exeption.EmployeeAlreadyAddedExeption;
-import com.superduperemployee.employeebook.exeption.EmployeeStorageIsFullException;
-import java.util.*;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private final EmployeeServiceInterface employeeService;
-    private final DepartamentServiceInterface departmentService;
 
-
-    public EmployeeController(EmployeeServiceInterface employeeService, DepartamentServiceInterface departmentService) {
+    // Внедрение зависимости через конструктор
+    public EmployeeController(EmployeeServiceInterface employeeService) {
         this.employeeService = employeeService;
-        this.departmentService = departmentService;
     }
 
-    @DeleteMapping
-    public Object employeeList() {
-        return employeeService.getEmployees();
+    // Добавление сотрудника
+    @PostMapping
+    public Employee addEmployee(@RequestBody Employee employee) {
+        employeeService.addEmployee(employee);
+        return employee;
     }
 
-    @DeleteMapping(path = "/del")
-    public ResponseEntity<Void> employeeDelete(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        employeeService.deleteEmployee(firstName, lastName);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-    @GetMapping(path = "/add")
-    public ResponseEntity<?> employeeAdd(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            Employee employee = employeeService.addEmployee(firstName, lastName);
-            return ResponseEntity.status(HttpStatus.CREATED).body(employee);
-        } catch (EmployeeAlreadyAddedExeption e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (EmployeeStorageIsFullException e) {
-            return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE).build();
-        }
+    // Удаление сотрудника по имени и фамилии
+    @DeleteMapping("/{firstName}/{lastName}")
+    public String removeEmployee(@PathVariable String firstName, @PathVariable String lastName) {
+        employeeService.removeEmployee(firstName, lastName);
+        return "Сотрудник " + firstName + " " + lastName + " удален.";
     }
 
-    @GetMapping(path = "/find")
-    public ResponseEntity<?> employeeFind(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            Employee employee = employeeService.findEmployee(firstName, lastName);
-            return ResponseEntity.ok(employee);
-        } catch (EmployeeNotFoundExeption e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    // Поиск сотрудника по имени и фамилии
+    @GetMapping("/{firstName}/{lastName}")
+    public Employee findEmployee(@PathVariable String firstName, @PathVariable String lastName) {
+        return employeeService.findEmployee(firstName, lastName);
     }
 
-    @GetMapping(path = "/departments/all", params = "departmentId")
-    public ResponseEntity<?> employeeInDepartment(@RequestParam("departmentId") int department) {
-        try {
-            List<Employee> employees = (List<Employee>) departmentService.getEmployeesInDepartment(department);
-            return ResponseEntity.ok(employees);
-        } catch (EmployeeNotFoundExeption e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @GetMapping(path = "/departments/all")
-    public ResponseEntity<?> employeeGroupByDepartment() {
-        try {
-            Map<Integer, List<Employee>> groupedEmployees = departmentService.getEmployeesGroupByDepartment();
-            return ResponseEntity.ok(groupedEmployees);
-        } catch (EmployeeNotFoundExeption e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @GetMapping(path = "/departments/min-salary")
-    public ResponseEntity<?> employeeMinSalary(@RequestParam("departmentId") int department) {
-        try {
-            Employee minSalary = departmentService.getSalaryMin(department);
-            return ResponseEntity.ok(minSalary);
-        } catch (EmployeeNotFoundExeption e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @GetMapping(path = "/departments/max-salary")
-    public ResponseEntity<?> employeeMaxSalary(@RequestParam("departmentId") int department) {
-        try {
-            Employee maxSalary = departmentService.getSalaryMax(department);
-            return ResponseEntity.ok(maxSalary);
-        } catch (EmployeeNotFoundExeption e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    // Получение списка всех сотрудников
+    @GetMapping
+    public List<Employee> getAllEmployees() {
+        return employeeService.getAllEmployees();
     }
 }

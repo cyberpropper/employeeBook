@@ -1,79 +1,97 @@
 package com.superduperemployee.employeebook.model;
 
-import java.util.Objects;
+import org.springframework.http.HttpStatus;
 
 public class Employee {
-    private final String firstName;
-    private final String lastName;
-    private int department;
-    private double salary;
 
-    public Employee(String firstName, String lastName, int department, double salary) {
+    private String firstName; // Имя сотрудника
+    private String lastName;  // Фамилия сотрудника
+    private int departmentId; // Идентификатор отдела
+    private double salary;    // Зарплата сотрудника
+
+    // Конструктор для создания объекта Employee
+    public Employee(String firstName, String lastName, int departmentId, double salary) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.department = department;
+        this.departmentId = departmentId;
         this.salary = salary;
     }
 
-    public Employee(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public Employee() {
-        throw new RuntimeException("Задайте имя, фамилию, отдел и зарплату!");
-    }
-
-    public String id() {
-        return (getFirstName() + getLastName()).toLowerCase();
-    }
-
+    // Геттер для имени
     public String getFirstName() {
         return firstName;
     }
 
+    // Сеттер для имени
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    // Геттер для фамилии
     public String getLastName() {
         return lastName;
     }
 
-    public void setDepartment(int department) {
-        this.department = department;
+    // Сеттер для фамилии
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public void setSalary(double salary) {
-        this.salary = salary > 0 ? salary : 0;
+    // Геттер для идентификатора отдела
+    public int getDepartmentId() {
+        return departmentId;
     }
 
-    public int getDepartment() {
-        return department;
+    // Сеттер для идентификатора отдела
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 
+    // Геттер для зарплаты
     public double getSalary() {
-        if (salary <= 0) {
-            throw new IllegalArgumentException("Зарплата должна быть положительным числом");
-        }
         return salary;
     }
 
-
-    @Override
-    public String toString() {
-        return firstName + " " + lastName;
+    // Сеттер для зарплаты
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 
+    // Переопределение метода toString для удобного вывода информации о сотруднике
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", departmentId=" + departmentId +
+                ", salary=" + salary +
+                '}';
+    }
+
+    // Переопределение метода equals для сравнения сотрудников
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Employee employee = (Employee) o;
-        return Objects.equals(firstName, employee.firstName) &&
-                Objects.equals(lastName, employee.lastName) &&
-                Objects.equals(salary, employee.salary) &&
-                Objects.equals(department, employee.department);
+
+        if (departmentId != employee.departmentId) return false;
+        if (Double.compare(employee.salary, salary) != 0) return false;
+        if (!firstName.equals(employee.firstName)) return false;
+        return lastName.equals(employee.lastName);
     }
 
+    // Переопределение метода hashCode для корректной работы с коллекциями
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, salary, department);
+        int result;
+        long temp;
+        result = firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + departmentId;
+        temp = Double.doubleToLongBits(salary);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 }

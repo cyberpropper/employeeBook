@@ -2,53 +2,51 @@ package com.superduperemployee.employeebook.service;
 
 import com.superduperemployee.employeebook.model.Employee;
 import org.springframework.stereotype.Service;
-import com.superduperemployee.employeebook.exeption.EmployeeNotFoundExeption;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartamentService implements DepartamentServiceInterface {
+public class DepartamentService {
 
-    private final EmployeeServiceInterface employeeService;
+    private final EmployeeService employeeService;
 
-    public DepartamentService (EmployeeServiceInterface employeeService) {
+    public DepartamentService(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
-    private List<Employee> getEmployeesDepartment(int department) {
-        return employeeService.getEmployees().values().stream()
-                .filter(e -> e.getDepartment() == department)
+    public List<Employee> getEmployeesByDepartment(int departmentId) {
+        return employeeService.getAllEmployees().stream()
+                .filter(e -> e.getDepartmentId() == departmentId)
                 .toList();
     }
 
-
-    @Override
-    public Map<String, Employee> getEmployeesInDepartment(int department) {
-        return employeeService.getEmployees().entrySet().stream()
-                .filter(e -> e.getValue().getDepartment() == department || department == ALL_DEPARTMENTS)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public double getSumSalaryByDepartment(int departmentId) {
+        return employeeService.getAllEmployees().stream()
+                .filter(e -> e.getDepartmentId() == departmentId)
+                .mapToDouble(Employee::getSalary)
+                .sum();
     }
 
-    @Override
-    public Employee getSalaryMin(int department) {
-        return getEmployeesDepartment(department).stream()
-                .min(Comparator.comparingDouble(Employee::getSalary))
-                .orElseThrow(EmployeeNotFoundExeption::new);
+    public double getMaxSalaryByDepartment(int departmentId) {
+        return employeeService.getAllEmployees().stream()
+                .filter(e -> e.getDepartmentId() == departmentId)
+                .mapToDouble(Employee::getSalary)
+                .max()
+                .orElse(0);
     }
 
-    @Override
-    public Employee getSalaryMax(int department) {
-        return getEmployeesDepartment(department).stream()
-                .max(Comparator.comparingDouble(Employee::getSalary))
-                .orElseThrow(EmployeeNotFoundExeption::new);
+    public double getMinSalaryByDepartment(int departmentId) {
+        return employeeService.getAllEmployees().stream()
+                .filter(e -> e.getDepartmentId() == departmentId)
+                .mapToDouble(Employee::getSalary)
+                .min()
+                .orElse(0);
     }
-    @Override
-    public Map<Integer, List<Employee>> getEmployeesGroupByDepartment() {
-        return employeeService.getEmployees().values().stream()
-                .collect(Collectors.groupingBy(Employee::getDepartment));
+
+    public Map<Integer, List<Employee>> getEmployeesGroupedByDepartment() {
+        return employeeService.getAllEmployees().stream()
+                .collect(Collectors.groupingBy(Employee::getDepartmentId));
     }
 }

@@ -1,87 +1,45 @@
 package com.superduperemployee.employeebook.service;
 
-import com.superduperemployee.employeebook.exeption.EmployeeAlreadyAddedExeption;
-import com.superduperemployee.employeebook.exeption.EmployeeNotFoundExeption;
-import com.superduperemployee.employeebook.exeption.EmployeeStorageIsFullException;
 import com.superduperemployee.employeebook.model.Employee;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EmployeeService implements EmployeeServiceInterface {
-    private final Map<String, Employee> employeesBook = new HashMap<>();
-    private int maxEmployees = Integer.MAX_VALUE;
 
-    public EmployeeService() {
-        demoFill();
-    }
+    private final List<Employee> employees = new ArrayList<>(); // Список сотрудников
 
-    @PostConstruct
-    public void demoFill() {
-        addEmployee("Виктор", "Кормушкин", 1, 12_000);
-        addEmployee("Иван", "Печкин", 1, 21_000);
-        addEmployee("Виталий", "Скидан", 1, 44000);
-        addEmployee("Игнат", "Позневой", 2, 12_000);
-        addEmployee("Артем", "Кавасаки", 2, 32_000);
-        addEmployee("Влада", "Дуду", 1, 12000);
-        addEmployee("Влад", "Смакт", 2, 55000);
-        addEmployee("Наталья", "Арбузина", 3, 13_000);
-        addEmployee("Елена", "Баловня", 3, 114_000);
-        addEmployee("Алёна", "Прокофьева", 2, 3_000);
-        setMaxEmployees(10);
-    }
-
-    public int getMaxEmployees() {
-        return maxEmployees;
-    }
-
-    public void setMaxEmployees(int maxEmployees) {
-        if (employeesBook.size() > maxEmployees) throw new EmployeeStorageIsFullException();
-        this.maxEmployees = maxEmployees;
-    }
-
-    @Override
-    public Map<String, Employee> getEmployees() {
-        return employeesBook;
-    }
-
-    @Override
-    public Employee addEmployee(String firstName, String lastName) {
-        if (employeesBook.size() >= maxEmployees) throw new EmployeeStorageIsFullException();
-        try {
-            findEmployee(firstName, lastName);
-        } catch (EmployeeNotFoundExeption e) {
-            Employee employee = new Employee(firstName, lastName);
-            employeesBook.put(employee.id(), employee);
-            return employee;
+    // Добавление сотрудника
+    public void addEmployee(Employee employee) {
+        if (employees.contains(employee)) {
+            throw new IllegalArgumentException("Сотрудник уже существует в списке.");
         }
-        throw new EmployeeAlreadyAddedExeption();
+        employees.add(employee);
     }
 
-
-    @Override
-    public void addEmployee(String firstName, String lastName, int department, double salary) {
-        final Employee newemployee = new Employee(firstName, lastName, department, salary);
-        employeesBook.put(newemployee.id(), newemployee);
+    // Удаление сотрудника по имени и фамилии
+    public void removeEmployee(String firstName, String lastName) {
+        Employee employeeToRemove = findEmployee(firstName, lastName);
+        if (employeeToRemove == null) {
+            throw new IllegalArgumentException("Сотрудник не найден.");
+        }
+        employees.remove(employeeToRemove);
     }
 
-    @Override
-    public Employee deleteEmployee(String firstName, String lastName) {
-        Employee employee = findEmployee(firstName, lastName);
-        employeesBook.remove(employee.id());
-        return employee;
-    }
-
-    @Override
+    // Поиск сотрудника по имени и фамилии
     public Employee findEmployee(String firstName, String lastName) {
-        String id = new Employee(firstName, lastName).id();
-        if (employeesBook.containsKey(id)) {
-            return employeesBook.get(id);
+        for (Employee employee : employees) {
+            if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
+                return employee;
+            }
         }
-        throw new EmployeeNotFoundExeption();
+        return null;
     }
 
-
+    // Получение списка всех сотрудников
+    public List<Employee> getAllEmployees() {
+        return new ArrayList<>(employees); // Возвращаем копию списка
+    }
 }
